@@ -12,7 +12,7 @@ Afterwork 尝试让这段时间更有意识，也更容易安排。它不追求�
 ## Demo
 [打开 GitHub Pages 在线体验](https://sunnymoore1314-coder.github.io/afterwork/) · [查看源码仓库](https://github.com/sunnymoore1314-coder/afterwork)
 
-在线体验默认采用个人 AI 手动模式：Afterwork 生成提示词，用户在自己选择的 AI 对话中运行，再将 JSON 结果粘贴回来。也可以在 AI 设置中临时连接 OpenAI、DeepSeek 或兼容 OpenAI 格式的接口。
+在线体验默认采用个人 AI 手动模式：Afterwork 生成提示词，用户在自己选择的 AI 对话中运行，再将 JSON 结果粘贴回来。也可以在 AI 设置中临时连接 OpenRouter 免费模型、OpenAI、DeepSeek 或兼容 OpenAI 格式的接口。
 
 API Key 只保存在当前浏览器标签页，关闭标签页后清除；请求直接发送到用户选择的服务商。公开或多人使用时，建议继续使用手动模式或改用服务端密钥代理。
 
@@ -101,7 +101,7 @@ npm start
 构建生成 Cloudflare Workers 兼容的 `dist/server/index.js` 和客户端资源。构建不会调用 OpenAI，也不会消耗模型额度。
 
 ## GitHub Pages
-GitHub Pages 默认使用个人 AI 手动版：完整支持输入、生成提示词、粘贴 AI 返回结果、校验、时间轴和返回修改。用户也可以自行选择 API 模式，密钥只留在当前标签页。
+GitHub Pages 默认使用个人 AI 手动版：完整支持输入、生成提示词、粘贴 AI 返回结果、校验、时间轴和返回修改。用户也可以选择 OpenRouter 免费模型或其他 API 模式，密钥只留在当前标签页。
 
 服务端 AI 版本的代码仍保留在 `app/api/` 和 `lib/ai.ts`，供需要自动调用时使用；GitHub Pages 不运行这些 API。
 
@@ -247,6 +247,7 @@ README.md
 - 540 组心情／时长／预算／偏好／开始时间组合。
 - 时间连续性、总时长、跨午夜、免费预算、室内偏好和中文雨天示例。
 - 模拟 OpenAI 成功响应、拒绝、限流、鉴权错误、超时、非 JSON 和活动数量错误。
+- OpenRouter 免费路由的固定端点、默认模型、浏览器跨域预检、鉴权响应和完整计划解析。
 - HTTP 接口生成流程、内容类型、请求大小、无效时间与跨来源请求。
 - 手动提示词、带或不带 Markdown 代码块的 JSON 导入、错误格式提示和活动数量校验。
 - 浏览器中的直接访问空结果页、选择控件、修改开始时间、生成、返回修改，以及桌面和移动端排版。
@@ -261,4 +262,4 @@ GitHub Pages 在线版使用个人 AI 手动模式，不保存账号或 API Key�
 - 保持功能范围清晰，让选择状态、生成计划和返回修改形成完整体验。
 
 ## MVP Scope
-没有登录、数据库、长期记忆、社交、多 Agent、RAG、地图、Spotify 或日历登录。实时天气、真实附近地点、自动 AI 调用和历史记录不属于 GitHub Pages 手动版本；天气与城市只是可选输入。
+没有登录、数据库、云端长期记忆、社交、多 Agent、RAG、地图、Spotify 或日历登录。定位只在用户主动授权后读取一次；历史、偏好和 API Key 都留在当前浏览器中。
