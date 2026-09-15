@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useLanguage } from "@/components/LanguageProvider";
 import { addHistory } from "@/lib/history";
 import { chinaCities, weatherAtPosition, weatherForCity } from "@/lib/weather";
+import { loadPreferences } from "@/lib/preferences";
 const moods=[{value:"exhausted",label:"exhausted",icon:BatteryLow},{value:"stressed",label:"stressed",icon:CloudLightning},{value:"empty",label:"empty",icon:CircleDashed},{value:"restless",label:"restless",icon:Waves},{value:"fine",label:"fine",icon:Moon}];
 export function RecoveryForm(){
 const {t,language}=useLanguage();
@@ -22,6 +23,7 @@ const [startTime,setStartTime]=useState(""),[city,setCity]=useState(""),[weather
 const [locationLoading,setLocationLoading]=useState(false);
 const submitting=useRef(false),editedTime=useRef(false),activeRequest=useRef<AbortController|null>(null);
 useEffect(()=>{
+ const preferences=loadPreferences();setMinutes(preferences.minutes);setBudget(preferences.budget);setPreference(preferences.place);
  const updateClock=()=>{if(!editedTime.current){const now=new Date();setStartTime(String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0"))}};
  updateClock();
  try{const cached=sessionStorage.getItem("afterwork-plan");if(cached){const value=envelopeSchema.safeParse(JSON.parse(cached));if(value.success){const ctx=value.data.context;setMood(ctx.mood);setMinutes(String(ctx.minutes));setBudget(String(ctx.budget));setPreference(ctx.preference);setNote(ctx.note);setCity(ctx.city);setWeather(ctx.weather);setDetailsOpen(Boolean(ctx.city||ctx.weather));setStartTime(ctx.start_time);editedTime.current=true}}}catch{}

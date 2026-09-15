@@ -12,6 +12,7 @@ import { attachTimeline } from "@/lib/planner";
 import { draftSchema, inputSchema, type RecoveryInput } from "@/lib/types";
 import { useLanguage } from "@/components/LanguageProvider";
 import { addHistory } from "@/lib/history";
+import { loadPreferences } from "@/lib/preferences";
 
 export default function ManualPage() {
   const {language,t}=useLanguage();
@@ -31,7 +32,7 @@ export default function ManualPage() {
     } catch {}
   }, []);
 
-  const prompt = context ? manualPrompt(context, language) : "";
+  const prompt = context ? manualPrompt(context, language, loadPreferences()) : "";
 
   async function copyPrompt() {
     setError("");

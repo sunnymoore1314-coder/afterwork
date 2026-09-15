@@ -1,6 +1,7 @@
 import { draftSchema, type RecoveryInput } from "./types";
 import { attachTimeline } from "./planner";
 import { manualPrompt, parseManualResponse } from "./manual";
+import { loadPreferences } from "./preferences";
 
 export type PlannerProvider = "manual" | "openai" | "deepseek" | "custom";
 export type ProviderSettings = { provider: PlannerProvider; apiKey: string; model: string; baseUrl: string };
@@ -23,7 +24,7 @@ function defaultModel(provider: PlannerProvider) { return provider === "openai" 
 export async function requestProviderPlan(input: RecoveryInput, settings: ProviderSettings, signal: AbortSignal) {
   if (settings.provider === "manual" || !settings.apiKey.trim()) throw new Error("API_NOT_CONFIGURED");
   const model = settings.model.trim() || defaultModel(settings.provider); if (!model) throw new Error("MODEL_REQUIRED");
-  const response = await fetch(endpoint(settings), { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${settings.apiKey.trim()}` }, signal, body: JSON.stringify({ model, temperature: 0.7, response_format: { type: "json_object" }, messages: [{ role: "user", content: manualPrompt(input, document.documentElement.lang.startsWith("zh") ? "zh" : "en") }] }) });
+  const response = await fetch(endpoint(settings), { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${settings.apiKey.trim()}` }, signal, body: JSON.stringify({ model, temperature: 0.7, response_format: { type: "json_object" }, messages: [{ role: "user", content: manualPrompt(input, document.documentElement.lang.startsWith("zh") ? "zh" : "en",loadPreferences()) }] }) });
   let payload: any; try { payload = await response.json(); } catch { throw new Error("INVALID_PROVIDER_RESPONSE"); }
   if (!response.ok) throw new Error(typeof payload?.error?.message === "string" ? payload.error.message : `HTTP ${response.status}`);
   const content = payload?.choices?.[0]?.message?.content; if (typeof content !== "string") throw new Error("INVALID_PROVIDER_RESPONSE");
