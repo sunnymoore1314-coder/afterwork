@@ -81,6 +81,21 @@ Copy-Item .env.example .env
 
 打开 [本地预览](http://localhost:5173)。留空密钥即可体验完整示例流程。
 
+## Windows Desktop
+v2.0 使用 Tauri 2 将相同的静态前端打包为 Windows 桌面应用。桌面版继续使用本地浏览器存储，API Key 不会提交到仓库。
+
+创建本地桌面开发窗口：
+```bash
+npm run desktop:dev
+```
+
+创建 NSIS 安装包：
+```bash
+npm run desktop:build
+```
+
+Windows 构建需要 Rust、Microsoft C++ Build Tools 和 WebView2。推送 `v2.*` 标签后，GitHub Actions 会自动构建、启动测试并把安装版、便携版、网页包和校验文件上传到 Release。
+
 启用真实 AI 时，在本地 `.env` 中配置：
 ```dotenv
 OPENAI_API_KEY=your_server_side_key

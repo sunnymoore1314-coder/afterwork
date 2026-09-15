@@ -1,6 +1,6 @@
 {
   "name": "afterwork",
-  "version": "1.8.0",
+  "version": "2.0.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -11,7 +11,9 @@
     "build": "node scripts/run-framework.mjs build",
     "start": "node --import ./scripts/runtime-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "build:pages": "node scripts/build-pages.mjs"
+    "build:pages": "node scripts/build-pages.mjs",
+    "desktop:dev": "cargo tauri dev",
+    "desktop:build": "cargo tauri build --bundles nsis"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

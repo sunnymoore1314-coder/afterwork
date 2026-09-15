@@ -1,0 +1,71 @@
+name: Build Afterwork Windows desktop release
+
+on:
+  push:
+    tags: ["v2.*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install web dependencies
+        run: npm ci --include=dev --include=optional
+      - name: Check TypeScript
+        run: npx tsc --noEmit
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+      - name: Generate application icons
+        run: cargo tauri icon src-tauri/icons/app-icon.svg
+      - name: Build Windows application
+        run: cargo tauri build --bundles nsis
+      - name: Smoke test portable executable
+        shell: pwsh
+        run: |
+          $app = Resolve-Path "src-tauri/target/release/afterwork.exe"
+          $process = Start-Process -FilePath $app -PassThru
+          Start-Sleep -Seconds 10
+          if ($process.HasExited) { throw "Afterwork exited during its startup smoke test." }
+          Stop-Process -Id $process.Id -Force
+      - name: Prepare release files
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path release-files -Force | Out-Null
+          Copy-Item "src-tauri/target/release/afterwork.exe" "release-files/Afterwork-${{ github.ref_name }}-portable.exe"
+          $installer = Get-ChildItem "src-tauri/target/release/bundle/nsis/*-setup.exe" | Select-Object -First 1
+          if (-not $installer) { throw "NSIS installer was not created." }
+          Copy-Item $installer.FullName "release-files/Afterwork-${{ github.ref_name }}-setup.exe"
+          Compress-Archive -Path "pages-dist/*" -DestinationPath "release-files/Afterwork-${{ github.ref_name }}-web.zip"
+          Get-FileHash release-files/* -Algorithm SHA256 | ForEach-Object { "$($_.Hash)  $([IO.Path]::GetFileName($_.Path))" } | Set-Content release-files/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Afterwork-${{ github.ref_name }}-windows
+          path: release-files/*
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: Afterwork ${{ github.ref_name }} — Windows desktop
+          body: |
+            Afterwork 2.0 packages the complete personal recovery experience as a Windows desktop application.
+
+            - Windows installer and portable executable
+            - OpenRouter free models, OpenAI, DeepSeek, custom API, and manual mode
+            - Chinese and English interface
+            - Optional location and live weather
+            - Browser-local history and personal preferences
+            - API keys remain on the local device
+
+            The unsigned installer may show a Windows SmartScreen warning. Verify the included SHA256SUMS.txt before running it.
+          files: release-files/*
