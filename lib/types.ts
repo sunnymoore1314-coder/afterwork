@@ -15,5 +15,5 @@ export const draftSchema=z.object({title:shortText(100),goal:shortText(180),summ
 export const planSchema=draftSchema.extend({steps:z.array(z.object({time:z.string().regex(/^\d{2}:\d{2}–\d{2}:\d{2}$/),activity:shortText(200),reason:shortText(240)}).strict()).min(1).max(4)});
 export type PlanDraft=z.infer<typeof draftSchema>;
 export type RecoveryPlan=z.infer<typeof planSchema>;
-export const envelopeSchema=z.object({plan:planSchema,context:inputSchema,source:z.enum(["ai","example"])});
+export const envelopeSchema=z.object({plan:planSchema,context:inputSchema,source:z.enum(["ai","manual","example"])});
 export type PlanEnvelope=z.infer<typeof envelopeSchema>;

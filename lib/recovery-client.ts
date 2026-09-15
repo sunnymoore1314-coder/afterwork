@@ -1,20 +1,17 @@
-import { inputSchema, type RecoveryInput } from "./types";
-import { examplePlan } from "./planner";
+import type { RecoveryInput } from "./types";
 
 // GitHub Pages has no server. This flag is replaced at build time.
 const staticDemo = process.env.NEXT_PUBLIC_AFTERWORK_STATIC === "true";
 
 export async function getPlannerMode(signal: AbortSignal) {
-  if (staticDemo) return { mode: "example" };
+  if (staticDemo) return { mode: "manual" };
   const response = await fetch("/api/status", { signal });
   return response.ok ? response.json() : null;
 }
 
 export async function requestRecoveryPlan(context: RecoveryInput, signal: AbortSignal): Promise<unknown> {
   if (staticDemo) {
-    const input = inputSchema.safeParse(context);
-    if (!input.success) throw new Error("Please check your choices and start time.");
-    return { plan: examplePlan(input.data), context: input.data, source: "example" };
+    throw new Error("Manual mode does not call an API.");
   }
   const response = await fetch("/api/generate", {
     method: "POST",
@@ -30,4 +27,8 @@ export async function requestRecoveryPlan(context: RecoveryInput, signal: AbortS
     );
   }
   return body;
+}
+
+export function usesManualPlanner() {
+  return staticDemo;
 }

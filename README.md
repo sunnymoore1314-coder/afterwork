@@ -12,7 +12,7 @@ Afterwork 尝试让这段时间更有意识，也更容易安排。它不追求�
 ## Demo
 [打开 GitHub Pages 在线体验](https://sunnymoore1314-coder.github.io/afterwork/) · [查看源码仓库](https://github.com/sunnymoore1314-coder/afterwork)
 
-在线体验使用明确标注的示例模式；真实 OpenAI 接口与服务端配置说明见下文。
+在线体验采用个人 AI 手动模式：Afterwork 生成提示词，用户在自己选择的 AI 对话中运行，再将 JSON 结果粘贴回来。网站不接收 API Key。
 
 ### 首页
 ![Afterwork 首页](docs/screenshots/home.jpg)
@@ -23,9 +23,7 @@ Afterwork 尝试让这段时间更有意识，也更容易安排。它不追求�
 ### 移动端中文计划
 ![中文雨天计划](docs/screenshots/mobile-result.jpg)
 
-未配置密钥时，界面会明确显示 **Example mode**，结果标为 **YOUR EXAMPLE PLAN**。这一模式使用预写活动库，根据心情、时长、预算、室内／外偏好、疲劳关键词和用户填写的天气生成示例；它不会理解任意自然语言，也不调用 LLM。
-
-配置服务端密钥后，生成接口自动调用 OpenAI。真实 AI 请求失败会返回错误，用户可以重试，不会替换为示例结果。
+用户填写状态后，点击 **Prepare my AI prompt**，复制提示词到任意支持 JSON 输出的 AI。将返回内容粘贴到 Afterwork 后，网站会校验字段、活动数量和文字长度，并在浏览器中计算连续时间轴。
 
 ## How It Works
 ```text
@@ -40,10 +38,10 @@ Recovery Plan
 
 1. 用户选择心情、15／30／45／60 分钟、预算和活动偏好；可以补充一句状态。
 2. 开始时间默认采用浏览器本地时间，支持手动编辑。城市和天气是可选的用户输入。
-3. 服务端校验输入，将总时长分配为固定的活动时间段。
-4. OpenAI Responses API 用严格 JSON Schema 返回标题、目标、说明、活动、原因和收尾留言。
-5. 服务端再次校验响应，确保活动数量匹配，并生成连续时间轴。
-6. 结果页展示计划；返回表单可以修改条件。当前计划仅保存在当前标签页的 sessionStorage，关闭标签页后清除，没有历史记录功能。
+3. 浏览器生成包含约束、上下文和 JSON 格式要求的提示词。
+4. 用户在自己的 AI 对话中运行提示词，再复制返回的 JSON。
+5. Afterwork 校验响应，确保字段和活动数量匹配，并生成连续时间轴。
+6. 结果页展示计划；上下文和计划只保存在当前标签页的 sessionStorage，关闭标签页后清除。
 
 ## Tech Stack
 - Next.js App Router 风格的页面与 API Route
@@ -91,9 +89,9 @@ npm start
 构建生成 Cloudflare Workers 兼容的 `dist/server/index.js` 和客户端资源。构建不会调用 OpenAI，也不会消耗模型额度。
 
 ## GitHub Pages
-GitHub Pages 发布的是本项目的静态体验版：完整的输入、恢复计划时间轴和返回修改流程，使用活动库生成计划，界面始终标注 **Example mode**。这个版本在浏览器内生成示例，不发送 OpenAI 请求，不需要 API Key。
+GitHub Pages 发布个人 AI 手动版：完整支持输入、生成提示词、粘贴 AI 返回结果、校验、时间轴和返回修改。Pages 不调用 AI 接口，不需要 API Key，也不会接收用户的 AI 账号信息。
 
-服务端 AI 版本的代码仍然保留在 `app/api/` 和 `lib/ai.ts`。Pages 不运行这些 API；要启用真实 AI，需要另行部署兼容的服务端并配置服务端密钥。
+服务端 AI 版本的代码仍保留在 `app/api/` 和 `lib/ai.ts`，供需要自动调用时使用；GitHub Pages 不运行这些 API。
 
 ### 构建静态体验版
 ```bash
@@ -109,7 +107,7 @@ npm run build:pages
 3. 推送 `main` 后，工作流安装依赖、检查 TypeScript、构建静态版并发布。
 4. 网站地址以 GitHub Pages 设置页或工作流实际返回的地址为准。
 
-工作流按仓库名称设置 `AFTERWORK_PAGES_BASE`，无需改代码中的链接。Pages 工作流无需配置 OpenAI Secret；API Key 只用于服务端部署。
+工作流按仓库名称设置 `AFTERWORK_PAGES_BASE`，无需改代码中的链接。Pages 工作流无需配置 OpenAI Secret；手动模式由用户在自己的 AI 对话中完成生成。
 
 参考 [GitHub 官方发布工作流说明](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。
 
@@ -203,6 +201,7 @@ AI 提示词限制复杂任务、强度过高的活动、诊断和说教，要�
 app/
   page.tsx
   result/page.tsx
+  manual/page.tsx
   api/generate/route.ts
   api/status/route.ts
 components/
@@ -216,6 +215,7 @@ lib/
   prompts.ts
   types.ts
   recovery-client.ts
+  manual.ts
 web/
   main.tsx
   index.html
@@ -232,9 +232,10 @@ README.md
 - 时间连续性、总时长、跨午夜、免费预算、室内偏好和中文雨天示例。
 - 模拟 OpenAI 成功响应、拒绝、限流、鉴权错误、超时、非 JSON 和活动数量错误。
 - HTTP 接口生成流程、内容类型、请求大小、无效时间与跨来源请求。
+- 手动提示词、带或不带 Markdown 代码块的 JSON 导入、错误格式提示和活动数量校验。
 - 浏览器中的直接访问空结果页、选择控件、修改开始时间、生成、返回修改，以及桌面和移动端排版。
 
-GitHub Pages 在线版使用示例模式。真实 OpenAI 调用需要单独配置服务端密钥。
+GitHub Pages 在线版使用个人 AI 手动模式，不保存账号或 API Key。
 
 ## Design Decisions
 - 把一个生活观察收敛为“输入当前状态 → 得到短计划”的完整产品流程。
@@ -244,4 +245,4 @@ GitHub Pages 在线版使用示例模式。真实 OpenAI 调用需要单独配�
 - 保持功能范围清晰，让选择状态、生成计划和返回修改形成完整体验。
 
 ## MVP Scope
-没有登录、数据库、长期记忆、社交、多 Agent、RAG、地图、Spotify 或日历登录。实时天气、真实附近地点、Surprise Me 和历史记录不属于这一版本；天气与城市只是可选输入，为后续能力留出接口位置。
+没有登录、数据库、长期记忆、社交、多 Agent、RAG、地图、Spotify 或日历登录。实时天气、真实附近地点、自动 AI 调用和历史记录不属于 GitHub Pages 手动版本；天气与城市只是可选输入。

@@ -2,6 +2,7 @@ import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import Home from "../app/page";
 import ResultPage from "../app/result/page";
+import ManualPage from "../app/manual/page";
 import "../app/globals.css";
 
 function App() {
@@ -14,6 +15,6 @@ function App() {
     window.addEventListener("hashchange", navigate);
     return () => window.removeEventListener("hashchange", navigate);
   }, []);
-  return route === "#/result" ? <ResultPage /> : <Home />;
+  return route === "#/result" ? <ResultPage /> : route === "#/manual" ? <ManualPage /> : <Home />;
 }
 createRoot(document.getElementById("root")!).render(<StrictMode><App /></StrictMode>);
