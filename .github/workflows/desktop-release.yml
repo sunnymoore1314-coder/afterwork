@@ -26,11 +26,11 @@ jobs:
       - name: Check TypeScript
         run: npx tsc --noEmit
       - name: Install Tauri CLI
-        run: cargo install tauri-cli --version "^2" --locked
+        run: npm install --no-save @tauri-apps/cli@^2
       - name: Generate application icons
-        run: cargo tauri icon src-tauri/icons/app-icon.svg
+        run: npx tauri icon src-tauri/icons/app-icon.svg
       - name: Build Windows application
-        run: cargo tauri build --bundles nsis
+        run: npx tauri build --bundles nsis
       - name: Smoke test portable executable
         shell: pwsh
         run: |
