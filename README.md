@@ -18,6 +18,8 @@ Afterwork 尝试让这段时间更有意识，也更容易安排。它不追求�
 
 浏览器会在本地保存最近 10 份有效计划，支持重新打开、收藏、删除和沿用原条件。历史不会上传或跨设备同步。
 
+计划可以进入执行模式，逐项完成或跳过并显示进度；执行状态在刷新后保留，计划也可复制为纯文本。
+
 ### 首页
 ![Afterwork 首页](docs/screenshots/home.jpg)
 
@@ -207,6 +209,7 @@ app/
   result/page.tsx
   manual/page.tsx
   history/page.tsx
+  focus/page.tsx
   api/generate/route.ts
   api/status/route.ts
 components/
@@ -222,6 +225,7 @@ lib/
   recovery-client.ts
   manual.ts
   history.ts
+  progress.ts
 web/
   main.tsx
   index.html
