@@ -2,10 +2,8 @@ import { slotDurations } from "./planner";
 import { systemPrompt } from "./prompts";
 import type { RecoveryInput } from "./types";
 
-export function manualPrompt(input: RecoveryInput) {
-  const language = /[\u3400-\u9fff]/.test(input.note)
-    ? "Simplified Chinese"
-    : "the same language as the user's note, or English if it is empty";
+export function manualPrompt(input: RecoveryInput, uiLanguage: "en" | "zh" = "en") {
+  const language = uiLanguage === "zh" ? "Simplified Chinese" : "English";
   const durations = slotDurations[input.minutes];
   return `${systemPrompt}
 

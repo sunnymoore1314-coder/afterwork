@@ -14,6 +14,8 @@ Afterwork 尝试让这段时间更有意识，也更容易安排。它不追求�
 
 在线体验采用个人 AI 手动模式：Afterwork 生成提示词，用户在自己选择的 AI 对话中运行，再将 JSON 结果粘贴回来。网站不接收 API Key。
 
+界面支持中文和英文切换，语言偏好保存在当前浏览器；AI 提示词和返回语言会跟随界面语言。
+
 ### 首页
 ![Afterwork 首页](docs/screenshots/home.jpg)
 
