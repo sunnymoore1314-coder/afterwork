@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useLanguage } from "@/components/LanguageProvider";
+import { addHistory } from "@/lib/history";
 const moods=[{value:"exhausted",label:"exhausted",icon:BatteryLow},{value:"stressed",label:"stressed",icon:CloudLightning},{value:"empty",label:"empty",icon:CircleDashed},{value:"restless",label:"restless",icon:Waves},{value:"fine",label:"fine",icon:Moon}];
 export function RecoveryForm(){
 const {t}=useLanguage();
@@ -40,7 +41,7 @@ async function submit(event:React.FormEvent<HTMLFormElement>){
  try{
  const body=await requestRecoveryPlan(context.data,controller.signal);
  const result=envelopeSchema.safeParse(body);if(!result.success)throw new Error(t("invalidPlan"));
- try{sessionStorage.setItem("afterwork-plan",JSON.stringify(result.data))}catch{throw new Error(t("storageError"))}
+ try{sessionStorage.setItem("afterwork-plan",JSON.stringify(result.data));addHistory(result.data)}catch{throw new Error(t("storageError"))}
  router.push("/result");
  }catch(err){if(controller.signal.aborted)setError(t("timeout"));else setError(err instanceof Error?err.message:t("plannerError"));setLoading(false)}
  finally{clearTimeout(timer);submitting.current=false;activeRequest.current=null}

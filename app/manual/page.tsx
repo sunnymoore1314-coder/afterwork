@@ -11,6 +11,7 @@ import { manualPrompt, parseManualResponse } from "@/lib/manual";
 import { attachTimeline } from "@/lib/planner";
 import { draftSchema, inputSchema, type RecoveryInput } from "@/lib/types";
 import { useLanguage } from "@/components/LanguageProvider";
+import { addHistory } from "@/lib/history";
 
 export default function ManualPage() {
   const {language,t}=useLanguage();
@@ -49,7 +50,9 @@ export default function ManualPage() {
     try {
       const draft = draftSchema.parse(parseManualResponse(response));
       const plan = attachTimeline(draft, context);
-      sessionStorage.setItem("afterwork-plan", JSON.stringify({ plan, context, source: "manual" }));
+      const envelope={ plan, context, source: "manual" as const };
+      sessionStorage.setItem("afterwork-plan", JSON.stringify(envelope));
+      addHistory(envelope);
       router.push("/result");
     } catch (err) {
       const detail = err instanceof Error ? err.message : "Invalid response";

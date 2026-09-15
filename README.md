@@ -16,6 +16,8 @@ Afterwork 尝试让这段时间更有意识，也更容易安排。它不追求�
 
 界面支持中文和英文切换，语言偏好保存在当前浏览器；AI 提示词和返回语言会跟随界面语言。
 
+浏览器会在本地保存最近 10 份有效计划，支持重新打开、收藏、删除和沿用原条件。历史不会上传或跨设备同步。
+
 ### 首页
 ![Afterwork 首页](docs/screenshots/home.jpg)
 
@@ -204,6 +206,7 @@ app/
   page.tsx
   result/page.tsx
   manual/page.tsx
+  history/page.tsx
   api/generate/route.ts
   api/status/route.ts
 components/
@@ -218,6 +221,7 @@ lib/
   types.ts
   recovery-client.ts
   manual.ts
+  history.ts
 web/
   main.tsx
   index.html
