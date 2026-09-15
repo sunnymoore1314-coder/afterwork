@@ -12,7 +12,9 @@ Afterwork 尝试让这段时间更有意识，也更容易安排。它不追求�
 ## Demo
 [打开 GitHub Pages 在线体验](https://sunnymoore1314-coder.github.io/afterwork/) · [查看源码仓库](https://github.com/sunnymoore1314-coder/afterwork)
 
-在线体验采用个人 AI 手动模式：Afterwork 生成提示词，用户在自己选择的 AI 对话中运行，再将 JSON 结果粘贴回来。网站不接收 API Key。
+在线体验默认采用个人 AI 手动模式：Afterwork 生成提示词，用户在自己选择的 AI 对话中运行，再将 JSON 结果粘贴回来。也可以在 AI 设置中临时连接 OpenAI、DeepSeek 或兼容 OpenAI 格式的接口。
+
+API Key 只保存在当前浏览器标签页，关闭标签页后清除；请求直接发送到用户选择的服务商。公开或多人使用时，建议继续使用手动模式或改用服务端密钥代理。
 
 界面支持中文和英文切换，语言偏好保存在当前浏览器；AI 提示词和返回语言会跟随界面语言。
 
@@ -95,7 +97,7 @@ npm start
 构建生成 Cloudflare Workers 兼容的 `dist/server/index.js` 和客户端资源。构建不会调用 OpenAI，也不会消耗模型额度。
 
 ## GitHub Pages
-GitHub Pages 发布个人 AI 手动版：完整支持输入、生成提示词、粘贴 AI 返回结果、校验、时间轴和返回修改。Pages 不调用 AI 接口，不需要 API Key，也不会接收用户的 AI 账号信息。
+GitHub Pages 默认使用个人 AI 手动版：完整支持输入、生成提示词、粘贴 AI 返回结果、校验、时间轴和返回修改。用户也可以自行选择 API 模式，密钥只留在当前标签页。
 
 服务端 AI 版本的代码仍保留在 `app/api/` 和 `lib/ai.ts`，供需要自动调用时使用；GitHub Pages 不运行这些 API。
 

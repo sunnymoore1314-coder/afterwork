@@ -26,7 +26,8 @@ useEffect(()=>{
  const timer=setInterval(updateClock,60000);
  const controller=new AbortController();
  getPlannerMode(controller.signal).then(value=>{if(value&&typeof value==="object"&&"mode" in value&&(value.mode==="ai"||value.mode==="manual"||value.mode==="example"))setMode(value.mode)}).catch(()=>{});
- return ()=>{clearInterval(timer);controller.abort();activeRequest.current?.abort()};
+ const refreshMode=()=>getPlannerMode(new AbortController().signal).then(value=>{if(value&&typeof value==="object"&&"mode" in value&&(value.mode==="ai"||value.mode==="manual"||value.mode==="example"))setMode(value.mode)}).catch(()=>{});window.addEventListener("afterwork-provider-change",refreshMode);
+ return ()=>{clearInterval(timer);controller.abort();activeRequest.current?.abort();window.removeEventListener("afterwork-provider-change",refreshMode)};
 },[]);
 async function submit(event:React.FormEvent<HTMLFormElement>){
  event.preventDefault();if(submitting.current)return;submitting.current=true;setLoading(true);setError("");

@@ -5,6 +5,7 @@ import ResultPage from "../app/result/page";
 import ManualPage from "../app/manual/page";
 import HistoryPage from "../app/history/page";
 import FocusPage from "../app/focus/page";
+import SettingsPage from "../app/settings/page";
 import { LanguageProvider } from "../components/LanguageProvider";
 import "../app/globals.css";
 
@@ -18,6 +19,6 @@ function App() {
     window.addEventListener("hashchange", navigate);
     return () => window.removeEventListener("hashchange", navigate);
   }, []);
-  return route === "#/result" ? <ResultPage /> : route === "#/manual" ? <ManualPage /> : route === "#/history" ? <HistoryPage /> : route === "#/focus" ? <FocusPage /> : <Home />;
+  return route === "#/result" ? <ResultPage /> : route === "#/manual" ? <ManualPage /> : route === "#/history" ? <HistoryPage /> : route === "#/focus" ? <FocusPage /> : route === "#/settings" ? <SettingsPage /> : <Home />;
 }
 createRoot(document.getElementById("root")!).render(<StrictMode><LanguageProvider><App /></LanguageProvider></StrictMode>);
